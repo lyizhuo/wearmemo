@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>WearMemo · 原型 v0.3</title>
+<style>
+  :root{
+    --bg:#0A0A0B; --surface:#1C1C1E; --surface2:#2C2C2E;
+    --label:#FFFFFF; --label2:#9A9AA0; --label3:#7C7C82;
+    --red:#FF453A; --green:#30D158; --orange:#FF9F0A;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--label);
+    font-family:-apple-system,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased; padding:64px 40px 96px;
+  }
+  .wrap{max-width:1128px;margin:0 auto}
+
+  h1{font-size:26px;font-weight:600;margin:0 0 10px;letter-spacing:-0.3px}
+  .lede{color:var(--label2);font-size:14px;line-height:1.75;max-width:700px;margin:0}
+
+  .flow{display:grid;grid-template-columns:repeat(4,227px);gap:48px 32px;justify-content:center;margin:60px 0 0}
+  figure{margin:0}
+  .box{height:227px;display:grid;place-items:center}
+  .screen{display:block;overflow:hidden}
+  .screen.round{width:227px;height:227px;border-radius:50%;background:#000}
+  .screen.sq{width:160px;height:160px;border-radius:36px;background:var(--surface)}
+  .screen.card{width:210px;height:116px;border-radius:18px}
+  .screen img{display:block}
+  .screen.round img{width:227px;height:227px}
+  .screen.sq img{width:160px;height:160px}
+  .screen.card img{width:210px;height:116px}
+
+  figcaption{margin-top:16px;text-align:center}
+  .name{display:block;font-size:13px;font-weight:500;color:var(--label)}
+  .note{display:block;margin-top:4px;font-size:12px;line-height:1.6;color:var(--label3)}
+
+  hr{border:0;border-top:1px solid #242426;margin:88px 0 56px}
+
+  .specs{display:grid;grid-template-columns:repeat(3,1fr);gap:48px}
+  h2{font-size:12.5px;font-weight:600;color:var(--label2);margin:0 0 16px;letter-spacing:0.2px}
+  dl{margin:0;font-size:12.5px;line-height:2.05}
+  dt{color:var(--label3);display:inline}
+  dd{display:inline;margin:0 0 0 6px;color:var(--label)}
+  dd::after{content:"";display:block}
+
+  .roles{display:flex;flex-wrap:wrap;gap:8px}
+  .sw{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--label2);
+      border:1px solid #242426;border-radius:999px;padding:4px 11px 4px 4px}
+  .dot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(255,255,255,.14)}
+
+  footer{margin-top:72px;padding-top:26px;border-top:1px solid #242426;
+         font-size:12px;line-height:1.95;color:var(--label3)}
+  code{background:var(--surface2);padding:1px 5px;border-radius:4px;font-size:11.5px;color:var(--label2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>WearMemo</h1>
+  <p class="lede">
+    纯黑底、灰度层级、三个语义色（红=录制 / 绿=成功 / 橙=待处理），其余全部让给自己。
+    每屏内容块按 <strong>光学中心</strong> 对齐：CJK 字面重心比 baseline 高 0.44em，
+    所以 baseline = 屏幕中线 + 0.44 × 字号 —— 这是上一版整体看着"往下坠"的原因。
+  </p>
+
+  <div class="flow">
+    <figure>
+      <div class="box"><div class="screen round"><img src="01-idle.svg" alt="待录"></div></div>
+      <figcaption><span class="name">待录</span><span class="note">一个动作，96dp</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen round"><img src="02-recording.svg" alt="录音中"></div></div>
+      <figcaption><span class="name">录音中</span><span class="note">计时 + 波形 + 停止</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen round"><img src="03-uploaded.svg" alt="已上传"></div></div>
+      <figcaption><span class="name">已上传</span><span class="note">1 秒内给答复</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen card"><img src="04-notification.svg" alt="结果通知"></div></div>
+      <figcaption><span class="name">结果通知</span><span class="note">异步结果的入口</span></figcaption>
+    </figure>
+
+    <figure>
+      <div class="box"><div class="screen round"><img src="05-detail.svg" alt="笔记详情"></div></div>
+      <figcaption><span class="name">笔记详情</span><span class="note">全文可读，可重转</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen round"><img src="06-history.svg" alt="历史"></div></div>
+      <figcaption><span class="name">历史</span><span class="note">四条，不再往上翻</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen round"><img src="07-error.svg" alt="离线待传"></div></div>
+      <figcaption><span class="name">离线待传</span><span class="note">说清后果，给一个动作</span></figcaption>
+    </figure>
+    <figure>
+      <div class="box"><div class="screen sq"><img src="00-tile.svg" alt="表盘 Tile"></div></div>
+      <figcaption><span class="name">表盘 Tile</span><span class="note">不打开也能按</span></figcaption>
+    </figure>
+  </div>
+
+  <hr>
+
+  <div class="specs">
+    <div>
+      <h2>字阶</h2>
+      <dl>
+        <dt>计时</dt><dd>38 / Regular</dd>
+        <dt>主标题</dt><dd>20 / Semibold</dd>
+        <dt>区块标题</dt><dd>17 / Semibold</dd>
+        <dt>正文</dt><dd>13 / Regular</dd>
+        <dt>次要</dt><dd>11 / Regular</dd>
+        <dt>行距</dt><dd>20（正文）</dd>
+      </dl>
+    </div>
+    <div>
+      <h2>颜色</h2>
+      <div class="roles">
+        <span class="sw"><i class="dot" style="background:#000000"></i>background</span>
+        <span class="sw"><i class="dot" style="background:#1C1C1E"></i>surface</span>
+        <span class="sw"><i class="dot" style="background:#2C2C2E"></i>surface-raised</span>
+        <span class="sw"><i class="dot" style="background:#FFFFFF"></i>label</span>
+        <span class="sw"><i class="dot" style="background:#9A9AA0"></i>label-2</span>
+        <span class="sw"><i class="dot" style="background:#7C7C82"></i>label-3</span>
+        <span class="sw"><i class="dot" style="background:#FF453A"></i>record</span>
+        <span class="sw"><i class="dot" style="background:#30D158"></i>success</span>
+        <span class="sw"><i class="dot" style="background:#FF9F0A"></i>pending</span>
+      </div>
+    </div>
+    <div>
+      <h2>网格</h2>
+      <dl>
+        <dt>画布</dt><dd>227 × 227dp</dd>
+        <dt>基线</dt><dd>4dp 网格</dd>
+        <dt>主按钮</dt><dd>96dp（触控 48dp 起）</dd>
+        <dt>次级按钮</dt><dd>44dp</dd>
+        <dt>左右内边距</dt><dd>30dp</dd>
+        <dt>行距</dt><dd>20 / 32dp 两级</dd>
+      </dl>
+    </div>
+  </div>
+
+  <footer>
+    8 个 <code>.svg</code> 拖进 Figma 即为矢量图层组，<code>viewBox</code> 是 227 单位（=dp），渲染尺寸 454px。<br>
+    图标为 Material 24 格路径（组件可用、图形一致），排版与配色走 watchOS 的克制路线。<br>
+    未覆盖：加 tag 的选择态、重转确认、手机端待校对页 —— 属 v1.5。
+  </footer>
+
+</div>
+</body>
+</html>

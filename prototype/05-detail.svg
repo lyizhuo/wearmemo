@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="454" height="454" viewBox="0 0 227 227">
+  <!-- Note detail · block optical centre 113.5 -->
+  <rect width="227" height="227" rx="113.5" fill="#000000"/>
+
+  <text x="30" y="38" font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+        font-size="11" fill="#7C7C82">22:14</text>
+  <text x="196" y="38" text-anchor="end" font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+        font-size="11" font-weight="500" fill="#30D158">已入库</text>
+
+  <g font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="13" fill="#FFFFFF">
+    <text x="30" y="70">明天下午三点和产品对一下</text>
+    <text x="30" y="90">排期，记得带上接口文档，</text>
+    <text x="30" y="110">另外把上季度转化数据也</text>
+    <text x="30" y="130">过一遍。</text>
+  </g>
+
+  <text x="30" y="152" font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+        font-size="11" fill="#9A9AA0">#工作</text>
+
+  <g fill="#1C1C1E">
+    <circle cx="69.5" cy="178" r="22"/>
+    <circle cx="113.5" cy="178" r="22"/>
+    <circle cx="157.5" cy="178" r="22"/>
+  </g>
+
+  <g transform="translate(69.5,178) scale(0.75) translate(-12,-12)">
+    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(113.5,178) scale(0.75) translate(-12,-12)">
+    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-8 8s3.57 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="#FFFFFF"/>
+  </g>
+  <g transform="translate(157.5,178) scale(0.75) translate(-12,-12)">
+    <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" fill="#FFFFFF"/>
+  </g>
+</svg>

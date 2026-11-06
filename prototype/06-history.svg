@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="454" height="454" viewBox="0 0 227 227">
+  <!-- History · block optical centre 113.5 -->
+  <rect width="227" height="227" rx="113.5" fill="#000000"/>
+
+  <text x="113.5" y="40" text-anchor="middle" font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+        font-size="11" fill="#7C7C82">最近 4 条</text>
+
+  <g font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="30" y="68" font-size="10" fill="#7C7C82">刚刚</text>
+    <text x="70" y="68" font-size="13" fill="#FFFFFF">明天下午三点和产品…</text>
+    <circle cx="196" cy="64" r="2" fill="#9A9AA0"/>
+
+    <text x="30" y="100" font-size="10" fill="#7C7C82">18:32</text>
+    <text x="70" y="100" font-size="13" fill="#FFFFFF">把上周的埋点方案再…</text>
+    <circle cx="196" cy="96" r="2" fill="#FF9F0A"/>
+
+    <text x="30" y="132" font-size="10" fill="#7C7C82">昨天</text>
+    <text x="70" y="132" font-size="13" fill="#FFFFFF">想起来要问发票的事</text>
+    <circle cx="196" cy="128" r="2" fill="#9A9AA0"/>
+
+    <text x="30" y="164" font-size="10" fill="#7C7C82">周三</text>
+    <text x="70" y="164" font-size="13" fill="#FFFFFF">会议室投影又坏了</text>
+    <circle cx="196" cy="160" r="2" fill="#9A9AA0"/>
+  </g>
+
+  <text x="113.5" y="192" text-anchor="middle" font-family="-apple-system, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+        font-size="10" fill="#7C7C82">在 Blinko 看全部</text>
+</svg>

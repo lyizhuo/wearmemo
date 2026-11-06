@@ -1,0 +1,19 @@
+# Android
+*.iml
+.gradle/
+build/
+local.properties
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+
+# Prototype render artefacts
+prototype/_*.png
