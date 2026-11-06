@@ -10,6 +10,14 @@ captures/
 *.apk
 *.aab
 
+# Go relay
+relay/relay
+relay/relay.exe
+relay/data/
+
+# secrets
+.env
+
 # OS / editor
 .DS_Store
 Thumbs.db

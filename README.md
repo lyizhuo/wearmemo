@@ -70,11 +70,28 @@ buildConfigField("String", "DEVICE_TOKEN", "\"dev-token-change-me\"")
 - [x] 需求对齐（`REQUIREMENTS.md`）
 - [x] 产品建议（`PRODUCT-ADVICE.md`）
 - [x] 8 屏原型（`prototype/`，227dp 画布，`preview.png` 总览）
-- [x] Android 骨架：录音、本地队列、轮询、6 个界面
-- [ ] relay 服务（Go）
-- [ ] ASR 调用与 Blinko 写入
-- [ ] 前台服务保活 + 息屏继续录
+- [x] Android 骨架：录音、本地队列、轮询、6 个界面 —— **`gradle :app:assembleDebug` 已通过**
+- [x] relay（Go）：客户端 UUID 幂等、单 worker、重启恢复未完成任务、失败保留音频
+      —— 已编译并用 `healthz` / 401 / 404 冒烟测试
+- [ ] 端到端联调（真 ASR + 真 Blinko）
+- [ ] 前台服务保活 + 息屏继续录 + 60 秒自动分段
 - [ ] Tile / 表盘复杂功能
+- [ ] 通知回执（决定 v1 不引 FCM，失败态以角标呈现）
+
+### relay 的接口
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| POST | `/v1/memos` | multipart：`clientId` + `audio`，返回 `202 {id}`；同 `clientId` 重复提交返回同一个 job |
+| GET | `/v1/memos/{id}` | 轮询：`{status: queued\|transcribing\|writing\|done\|failed, text, noteId, error}` |
+| GET | `/healthz` | 存活探针 |
+
+启动：
+
+```bash
+cp relay.env.example .env   # 填 BLINKO_TOKEN 与 RELAY_DEVICE_TOKEN
+docker compose up -d --build
+```
 
 ## 设计
 

@@ -1,0 +1,30 @@
+# Runs next to the existing Blinko stack on the ARM host.
+# `blinko-network` is the network created by deploy/docker-compose.yml.
+services:
+  relay:
+    build:
+      context: ./relay
+    platform: linux/arm64
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      RELAY_DEVICE_TOKEN: ${RELAY_DEVICE_TOKEN:?set it in .env}
+      BLINKO_BASE: ${BLINKO_BASE:-http://blinko-website:1111}
+      BLINKO_TOKEN: ${BLINKO_TOKEN:?set it in .env}
+      ASR_BASE: ${ASR_BASE:-http://host.docker.internal:8000}
+      ASR_MODEL: ${ASR_MODEL:-Qwen/Qwen3-ASR-1.7B}
+    extra_hosts:
+      # lets the container reach an ASR server running on the host
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - relay-data:/data
+    networks:
+      - blinko-network
+
+volumes:
+  relay-data:
+
+networks:
+  blinko-network:
+    external: true

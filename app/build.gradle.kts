@@ -1,10 +1,12 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "dev.lyizhuo.wearmemo"
-    compileSdk = 36
+    compileSdk = 37
+    buildToolsVersion = "36.1.0"
 
     defaultConfig {
         applicationId = "dev.lyizhuo.wearmemo"
