@@ -55,7 +55,7 @@ class RelayApi(
                     "Content-Disposition: form-data; name=\"audio\"; filename=\"${file.name}\"\r\n"
                         .toByteArray()
                 )
-                out.write("Content-Type: audio/mp4\r\n\r\n".toByteArray())
+                out.write("Content-Type: audio/wav\r\n\r\n".toByteArray())
                 file.inputStream().use { it.copyTo(out) }
                 out.write("\r\n--$boundary--\r\n".toByteArray())
             }

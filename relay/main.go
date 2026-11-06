@@ -4,10 +4,12 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,6 +21,9 @@ type Config struct {
 	BlinkoToken string
 	ASRBase     string
 	ASRModel    string
+	ASRKeep     string
+	ASRLangs    string
+	MinRMS      float64
 	DataDir     string
 }
 
@@ -29,14 +34,26 @@ func env(key, def string) string {
 	return def
 }
 
+func envFloat(key string, def float64) float64 {
+	if v := os.Getenv(key); v != "" {
+		if f, err := strconv.ParseFloat(v, 64); err == nil {
+			return f
+		}
+	}
+	return def
+}
+
 func loadConfig() Config {
 	return Config{
 		Addr:        env("RELAY_ADDR", ":8080"),
 		DeviceToken: env("RELAY_DEVICE_TOKEN", "dev-token-change-me"),
 		BlinkoBase:  env("BLINKO_BASE", "http://127.0.0.1:1111"),
 		BlinkoToken: env("BLINKO_TOKEN", ""),
-		ASRBase:     env("ASR_BASE", "http://127.0.0.1:8000"),
-		ASRModel:    env("ASR_MODEL", "Qwen/Qwen3-ASR-1.7B"),
+		ASRBase:     env("ASR_BASE", "http://127.0.0.1:11434"),
+		ASRModel:    env("ASR_MODEL", "frozenlab/qwen3-asr:1.7b"),
+		ASRKeep:     env("ASR_KEEP_ALIVE", "30m"),
+		ASRLangs:    env("ASR_LANGS", "Chinese,English"),
+		MinRMS:      envFloat("ASR_MIN_RMS", 200),
 		DataDir:     env("RELAY_DATA", "./data"),
 	}
 }
@@ -61,13 +78,13 @@ func main() {
 		log.Fatalf("store: %v", err)
 	}
 
-	asr := NewASR(cfg.ASRBase, cfg.ASRModel)
+	asr := NewASR(cfg.ASRBase, cfg.ASRModel, cfg.ASRKeep, cfg.ASRLangs)
 	blinko := NewBlinko(cfg.BlinkoBase, cfg.BlinkoToken)
 
 	// One worker on purpose: the ASR host is shared and CPU-bound, and a
 	// backlog of 3 memos is far better than 3 memos that each take 3x longer.
 	queue := make(chan string, 64)
-	go worker(queue, store, asr, blinko)
+	go worker(queue, store, asr, blinko, cfg.MinRMS)
 
 	for _, j := range store.Pending() {
 		queue <- j.ID
@@ -194,13 +211,13 @@ func getHandler(store *Store) http.HandlerFunc {
 	}
 }
 
-func worker(queue <-chan string, store *Store, asr *ASR, blinko *Blinko) {
+func worker(queue <-chan string, store *Store, asr *ASR, blinko *Blinko, minRMS float64) {
 	for id := range queue {
-		process(id, store, asr, blinko)
+		process(id, store, asr, blinko, minRMS)
 	}
 }
 
-func process(id string, store *Store, asr *ASR, blinko *Blinko) {
+func process(id string, store *Store, asr *ASR, blinko *Blinko, minRMS float64) {
 	j, ok := store.Get(id)
 	if !ok || j.Status == StatusDone {
 		return
@@ -217,7 +234,14 @@ func process(id string, store *Store, asr *ASR, blinko *Blinko) {
 	store.Update(id, func(j *Job) { j.Status = StatusTranscribing })
 	started := time.Now()
 
-	text, err := asr.Transcribe(j.AudioPath)
+	// Guard 1: near-silence never reaches the model. A mis-tap in a pocket
+	// costs nothing instead of ten seconds of ASR and a junk note.
+	if rms, err := rmsOfWAV(j.AudioPath); err == nil && rms < minRMS {
+		fail(fmt.Sprintf("silence (rms=%.0f < %.0f)", rms, minRMS))
+		return
+	}
+
+	lang, text, err := asr.Transcribe(j.AudioPath)
 	if err != nil {
 		fail(err.Error())
 		return
@@ -227,6 +251,13 @@ func process(id string, store *Store, asr *ASR, blinko *Blinko) {
 		// Keep the audio: an empty transcript is exactly the case where the
 		// user needs to listen again.
 		fail("empty transcript")
+		return
+	}
+
+	// Guard 2: the model answers silence with a fluent sentence in some
+	// arbitrary language. A language we never speak means there was no speech.
+	if !asr.languageAllowed(lang) {
+		fail("unexpected language: " + lang)
 		return
 	}
 

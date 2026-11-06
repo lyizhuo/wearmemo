@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only: lets the emulator/app talk to a local relay over plain HTTP
+  (http://10.0.2.2:8080). The release build keeps Android's default policy,
+  i.e. cleartext is refused — the deployed relay is expected to sit behind
+  HTTPS (Cloudflare Tunnel).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application android:usesCleartextTraffic="true" />
+
+</manifest>

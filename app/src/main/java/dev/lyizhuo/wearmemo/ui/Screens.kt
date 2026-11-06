@@ -191,6 +191,7 @@ private fun Waveform() {
 
 @Composable
 fun UploadedScreen(memo: Memo?, onOpen: () -> Unit) {
+    val failed = memo?.status == MemoStatus.FAILED
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -199,23 +200,31 @@ fun UploadedScreen(memo: Memo?, onOpen: () -> Unit) {
         verticalArrangement = Arrangement.Center,
     ) {
         Box(
-            modifier = Modifier.size(60.dp).clip(CircleShape).background(WM.Success),
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape)
+                .background(if (failed) WM.Pending else WM.Success),
             contentAlignment = Alignment.Center,
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_check),
+                painter = painterResource(if (failed) R.drawable.ic_retry else R.drawable.ic_check),
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.size(32.dp),
             )
         }
         Spacer(Modifier.height(18.dp))
-        Text("已上传", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = WM.Label)
+        Text(
+            if (failed) "没听清" else "已上传",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = WM.Label,
+        )
         Spacer(Modifier.height(6.dp))
         Text(
             when (memo?.status) {
                 MemoStatus.DONE -> "已写入 Blinko"
-                MemoStatus.FAILED -> "转写失败"
+                MemoStatus.FAILED -> "没有识别到语音"
                 else -> "正在转写"
             },
             fontSize = 13.sp,
@@ -223,7 +232,7 @@ fun UploadedScreen(memo: Memo?, onOpen: () -> Unit) {
         )
         Spacer(Modifier.height(5.dp))
         Text(
-            "完成后通知你，可先息屏",
+            if (failed) "音频已保留，可在历史里重试" else "完成后通知你，可先息屏",
             fontSize = 11.sp,
             color = WM.Label3,
             textAlign = TextAlign.Center,

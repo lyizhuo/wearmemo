@@ -41,15 +41,42 @@ Wear OS 手表上的语音速记：抬腕说一句，异步转写，落进自建
 
 ## ASR
 
-Qwen3-ASR（`1.7B` / `0.6B`，**没有 0.7B**）。官方建议用 vLLM 起服务，走 OpenAI 兼容接口：
+不是 vLLM，是 **Ollama**：`frozenlab/qwen3-asr:1.7b`（GGUF Q8_0，qwen3vl 家族）。
+音频走 `images` 字段 base64，prompt 留空：
 
 ```bash
-qwen-asr-serve Qwen/Qwen3-ASR-1.7B --gpu-memory-utilization 0.8 --host 0.0.0.0 --port 8000
+curl $ASR_BASE/api/chat -d '{
+  "model": "frozenlab/qwen3-asr:1.7b",
+  "stream": false,
+  "keep_alive": "30m",
+  "messages": [{"role":"user","content":"","images":["<base64 wav>"]}]
+}'
 ```
 
-- 模型名在 relay 里是**配置项**，1.7B ↔ 0.6B 只改一个字符串，架构不分叉。
-- **官方没有置信度字段**（输出只有 `language` + `text`）。低置信度判定只能靠代理指标：VAD 语音占比、电平、时长/字数比，或 vLLM 的 `logprobs`（需实测）。
-- `ai.speechToText` 在 Blinko 里是**被注释掉的空实现**，不能用。
+**实测延迟**（本机 → 你的 ASR 主机）：
+
+| 音频 | 墙钟 | 倍率 | 说明 |
+|---|---|---|---|
+| 6.41s | 4.13s | 0.65x | 模型热 |
+| 24.12s | 18.62s | 0.77x | prompt_eval 占 10.3s |
+| 6.41s | 16.47s | — | 冷启动，其中 9.15s 是加载模型 |
+
+结论：**1.7B 够快，不需要换 0.6B**。用 `keep_alive=30m` 把冷启动摊掉。
+
+输出格式是 `language Chinese<asr_text>正文`，relay 会解析出语言和正文。
+
+### 两个必须有的闸
+
+静音输入**不会**返回空，而是返回一段流畅的幻觉文本。实测里模拟器静音 4 秒，模型吐出：
+
+> El 20 de enero de 2018, el presidente de la República, Enrique Peña Nieto…
+
+这条差点被写进 Blinko。所以 relay 有两道前置校验：
+
+1. **静音闸**：调用前算 WAV 的 RMS，低于 `ASR_MIN_RMS`（默认 200）直接失败，不花 ASR 时间。
+2. **语种闸**：识别出的语言不在 `ASR_LANGS`（默认 `Chinese,English`）里，判定为无语音。
+
+两道闸都保留音频、不写 Blinko，失败原因写进 job 的 `error` 字段。
 
 ## 构建
 
@@ -70,13 +97,13 @@ buildConfigField("String", "DEVICE_TOKEN", "\"dev-token-change-me\"")
 - [x] 需求对齐（`REQUIREMENTS.md`）
 - [x] 产品建议（`PRODUCT-ADVICE.md`）
 - [x] 8 屏原型（`prototype/`，227dp 画布，`preview.png` 总览）
-- [x] Android 骨架：录音、本地队列、轮询、6 个界面 —— **`gradle :app:assembleDebug` 已通过**
-- [x] relay（Go）：客户端 UUID 幂等、单 worker、重启恢复未完成任务、失败保留音频
-      —— 已编译并用 `healthz` / 401 / 404 冒烟测试
-- [ ] 端到端联调（真 ASR + 真 Blinko）
+- [x] Android 骨架：录音、本地队列、轮询、6 个界面 —— `assembleDebug` 通过，已在 Wear OS 模拟器（454×454）跑起来
+- [x] relay（Go）：客户端 UUID 幂等、单 worker、重启恢复、静音/语种双闸
+- [x] **端到端跑通**：手表 → relay → ASR → Blinko，24s 音频 18.6s 出结果，note 已落库
+- [ ] 真机联调（模拟器麦克风是静音，只验到了失败路径）
 - [ ] 前台服务保活 + 息屏继续录 + 60 秒自动分段
 - [ ] Tile / 表盘复杂功能
-- [ ] 通知回执（决定 v1 不引 FCM，失败态以角标呈现）
+- [ ] 通知回执（v1 不引 FCM，失败态以角标呈现）
 
 ### relay 的接口
 
