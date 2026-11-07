@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "dev.lyizhuo.wearmemo"
+    namespace = "dev.wearmemo"
     compileSdk = 37
     buildToolsVersion = "36.1.0"
 
     defaultConfig {
-        applicationId = "dev.lyizhuo.wearmemo"
+        applicationId = "dev.wearmemo"
         minSdk = 30
         targetSdk = 36
         versionCode = 1

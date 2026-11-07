@@ -61,7 +61,7 @@
 
 结论：**置信度不是"能不能留音频"的开关，只是一个"要不要提醒用户回看"的标记**。这一点下面 D4 单独决策。
 
-### Blinko（`/home/lyizhuo/projects/blinko`，fork，v1.8.10）
+### Blinko（`/path/to/blinko`，fork，v1.8.10）
 
 | 事实 | 位置 | 影响 |
 |---|---|---|

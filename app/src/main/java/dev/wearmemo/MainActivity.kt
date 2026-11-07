@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo
+package dev.wearmemo
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,13 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dev.lyizhuo.wearmemo.ui.CaptureScreen
-import dev.lyizhuo.wearmemo.ui.DetailScreen
-import dev.lyizhuo.wearmemo.ui.HistoryScreen
-import dev.lyizhuo.wearmemo.ui.OfflineScreen
-import dev.lyizhuo.wearmemo.ui.RecordingScreen
-import dev.lyizhuo.wearmemo.ui.UploadedScreen
-import dev.lyizhuo.wearmemo.ui.WM
+import dev.wearmemo.ui.CaptureScreen
+import dev.wearmemo.ui.DetailScreen
+import dev.wearmemo.ui.HistoryScreen
+import dev.wearmemo.ui.OfflineScreen
+import dev.wearmemo.ui.RecordingScreen
+import dev.wearmemo.ui.UploadedScreen
+import dev.wearmemo.ui.WM
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

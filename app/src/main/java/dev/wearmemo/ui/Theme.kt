@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo.ui
+package dev.wearmemo.ui
 
 import androidx.compose.ui.graphics.Color
 

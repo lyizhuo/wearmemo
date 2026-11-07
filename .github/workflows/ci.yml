@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  relay:
+    name: relay (go)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: relay
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: relay/go.mod
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "these files need gofmt:"; echo "$unformatted"; exit 1
+          fi
+
+      - run: go build ./...
+      - run: go vet ./...
+
+  android:
+    name: android (debug apk)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install SDK platform
+        run: sdkmanager --install "platforms;android-37" "build-tools;36.1.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # No release publishing on purpose: the APK is an artifact you download
+      # from the run, so nothing is announced or tagged until it is ready.
+      - run: ./gradlew :app:assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wearmemo-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14

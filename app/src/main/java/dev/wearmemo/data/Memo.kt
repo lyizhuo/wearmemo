@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo.data
+package dev.wearmemo.data
 
 import android.content.Context
 import org.json.JSONArray

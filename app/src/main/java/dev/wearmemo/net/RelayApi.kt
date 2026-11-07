@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo.net
+package dev.wearmemo.net
 
 import org.json.JSONObject
 import java.io.File

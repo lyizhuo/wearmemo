@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo
+package dev.wearmemo
 
 import android.app.Application
 import androidx.compose.runtime.getValue
@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.lyizhuo.wearmemo.audio.Recorder
-import dev.lyizhuo.wearmemo.data.Memo
-import dev.lyizhuo.wearmemo.data.MemoQueue
-import dev.lyizhuo.wearmemo.data.MemoStatus
-import dev.lyizhuo.wearmemo.net.RelayApi
+import dev.wearmemo.audio.Recorder
+import dev.wearmemo.data.Memo
+import dev.wearmemo.data.MemoQueue
+import dev.wearmemo.data.MemoStatus
+import dev.wearmemo.net.RelayApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

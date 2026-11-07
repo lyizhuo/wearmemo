@@ -1,4 +1,4 @@
-package dev.lyizhuo.wearmemo.ui
+package dev.wearmemo.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,9 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.lyizhuo.wearmemo.R
-import dev.lyizhuo.wearmemo.data.Memo
-import dev.lyizhuo.wearmemo.data.MemoStatus
+import dev.wearmemo.R
+import dev.wearmemo.data.Memo
+import dev.wearmemo.data.MemoStatus
 
 /* ------------------------------------------------------------------ */
 /*  Primitives                                                        */
