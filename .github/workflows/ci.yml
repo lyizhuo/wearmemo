@@ -54,7 +54,7 @@ jobs:
           set -euo pipefail
           SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
           export PATH="$SDK_ROOT/cmdline-tools/latest/bin:$SDK_ROOT/platform-tools:$PATH"
-          sdkmanager --install "platforms;android-37" "build-tools;36.1.0"
+          sdkmanager --install "platforms;android-36" "build-tools;36.1.0"
 
       - uses: gradle/actions/setup-gradle@v4
 

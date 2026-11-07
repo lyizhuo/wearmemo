@@ -23,10 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # GHCR rejects uppercase in image names.
+      # GHCR requires <registry>/<owner>/<image> — a flat name is rejected with
+      # 400 on push. Owner must be lowercase too.
       - name: Resolve image name
         id: image
-        run: echo "name=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]' | sed 's#/#-#')" >> "$GITHUB_OUTPUT"
+        run: |
+          owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+          echo "name=ghcr.io/${owner}/wearmemo-relay" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
