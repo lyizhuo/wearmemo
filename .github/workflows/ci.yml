@@ -45,10 +45,16 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - uses: android-actions/setup-android@v3
-
+      # Deliberately not using android-actions/setup-android: it tries to
+      # install the legacy "tools" package, which no longer exists and makes
+      # the whole job die before it reaches our code. The runner image already
+      # ships cmdline-tools, we only need the platform we compile against.
       - name: Install SDK platform
-        run: sdkmanager --install "platforms;android-37" "build-tools;36.1.0"
+        run: |
+          set -euo pipefail
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          export PATH="$SDK_ROOT/cmdline-tools/latest/bin:$SDK_ROOT/platform-tools:$PATH"
+          sdkmanager --install "platforms;android-37" "build-tools;36.1.0"
 
       - uses: gradle/actions/setup-gradle@v4
 
