@@ -9,11 +9,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      RELAY_DEVICE_TOKEN: ${RELAY_DEVICE_TOKEN:?set it in .env}
+      RELAY_ADMIN_TOKEN: ${RELAY_ADMIN_TOKEN:?set it in .env}
       BLINKO_BASE: ${BLINKO_BASE:-http://blinko-website:1111}
-      BLINKO_TOKEN: ${BLINKO_TOKEN:?set it in .env}
-      ASR_BASE: ${ASR_BASE:-http://host.docker.internal:8000}
-      ASR_MODEL: ${ASR_MODEL:-Qwen/Qwen3-ASR-1.7B}
+      BLINKO_TOKEN: ${BLINKO_TOKEN:-}
+      ASR_BASE: ${ASR_BASE:-http://host.docker.internal:11434}
+      ASR_MODEL: ${ASR_MODEL:-frozenlab/qwen3-asr:1.7b}
     extra_hosts:
       # lets the container reach an ASR server running on the host
       - "host.docker.internal:host-gateway"

@@ -102,27 +102,46 @@ relay 镜像：`ghcr.io/<owner>/wearmemo-relay`，同时提供 `linux/arm64` 与
 - [x] 产品建议（`PRODUCT-ADVICE.md`）
 - [x] 8 屏原型（`prototype/`，227dp 画布，`preview.png` 总览）
 - [x] Android 骨架：录音、本地队列、轮询、6 个界面 —— `assembleDebug` 通过，已在 Wear OS 模拟器（454×454）跑起来
-- [x] relay（Go）：客户端 UUID 幂等、单 worker、重启恢复、静音/语种双闸
-- [x] **端到端跑通**：手表 → relay → ASR → Blinko，24s 音频 18.6s 出结果，note 已落库
+- [x] relay（Go）：Web 配置页 + 配对码 + 每设备令牌（可吊销）、UUID 幂等、单 worker、重启恢复、静音/语种双闸
+- [x] **端到端跑通**：配置 → 配对 → 手表上传 → ASR → Blinko，已验证中文与粤语
+- [ ] 手表端配对界面（第 7 屏：输入 6 位码）+ DataStore 存令牌
 - [ ] 真机联调（模拟器麦克风是静音，只验到了失败路径）
 - [ ] 前台服务保活 + 息屏继续录 + 60 秒自动分段
 - [ ] Tile / 表盘复杂功能
 - [ ] 通知回执（v1 不引 FCM，失败态以角标呈现）
 
-### relay 的接口
-
-| 方法 | 路径 | 说明 |
-|---|---|---|
-| POST | `/v1/memos` | multipart：`clientId` + `audio`，返回 `202 {id}`；同 `clientId` 重复提交返回同一个 job |
-| GET | `/v1/memos/{id}` | 轮询：`{status: queued\|transcribing\|writing\|done\|failed, text, noteId, error}` |
-| GET | `/healthz` | 存活探针 |
-
-启动：
+### 部署与配对
 
 ```bash
-cp relay.env.example .env   # 填 BLINKO_TOKEN 与 RELAY_DEVICE_TOKEN
+cp relay.env.example .env   # 只需要填 RELAY_ADMIN_TOKEN
 docker compose up -d --build
 ```
+
+然后打开 `https://你的域名/`：
+
+1. **首次配置** —— 填 ASR 地址/模型、Blinko 地址/Token，保存（存在 `data/settings.json`，改完立刻生效，不用重启容器）。
+2. **生成配对码** —— 得到一个 6 位码（Crockford Base32，去掉了 0/O/1/I/L），5 分钟内有效、只能用一次。
+3. **手表输入这串码** —— 换到设备令牌，之后所有请求都带它。
+4. **设备页** —— 看谁在用、最近一次请求时间、随时吊销。
+
+relay 地址在编译期烤进 APK（你自己构建，所以合理）：
+
+```bash
+./gradlew :app:assembleDebug -PrelayBaseUrl=https://memo.example.com
+```
+
+这样手表运行时就只剩"输入配对码"一件事。
+
+| 方法 | 路径 | 鉴权 | 说明 |
+|---|---|---|---|
+| GET | `/` | — | 未配置跳 `/setup`，否则跳 `/admin` |
+| POST | `/v1/pair` | — | 手表用配对码换设备令牌，一次性 |
+| POST | `/v1/memos` | 设备令牌 | multipart：`clientId` + `audio`，返回 `202 {id}` |
+| GET | `/v1/memos/{id}` | 设备令牌 | 轮询：`status / text / language / noteId / error` |
+| GET | `/healthz` | — | 存活探针 |
+
+令牌是 opaque 的 `wm_` 前缀随机串，服务端只存 sha256——**不用 JWT**，因为手表时钟可能不准，
+`exp` 会随机失效。
 
 ## 设计
 
