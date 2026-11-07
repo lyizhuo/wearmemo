@@ -23,6 +23,7 @@ type Job struct {
 	ClientID string    `json:"clientId"`
 	Status   string    `json:"status"`
 	Text     string    `json:"text,omitempty"`
+	Language string    `json:"language,omitempty"`
 	NoteID   int64     `json:"noteId,omitempty"`
 	Error    string    `json:"error,omitempty"`
 	Created  time.Time `json:"createdAt"`

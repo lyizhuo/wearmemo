@@ -52,7 +52,7 @@ func loadConfig() Config {
 		ASRBase:     env("ASR_BASE", "http://127.0.0.1:11434"),
 		ASRModel:    env("ASR_MODEL", "frozenlab/qwen3-asr:1.7b"),
 		ASRKeep:     env("ASR_KEEP_ALIVE", "30m"),
-		ASRLangs:    env("ASR_LANGS", "Chinese,English"),
+		ASRLangs:    env("ASR_LANGS", "Chinese,Cantonese,English"),
 		MinRMS:      envFloat("ASR_MIN_RMS", 200),
 		DataDir:     env("RELAY_DATA", "./data"),
 	}
@@ -256,12 +256,19 @@ func process(id string, store *Store, asr *ASR, blinko *Blinko, minRMS float64) 
 
 	// Guard 2: the model answers silence with a fluent sentence in some
 	// arbitrary language. A language we never speak means there was no speech.
+	//
+	// Note that Qwen3-ASR tags Cantonese as "Cantonese", not "Chinese" — an
+	// allowlist that only says Chinese silently drops every Cantonese memo.
 	if !asr.languageAllowed(lang) {
-		fail("unexpected language: " + lang)
+		fail("unexpected language: " + lang + " (allowed: " + strings.Join(asr.langs, ",") + ")")
 		return
 	}
+	log.Printf("job %s detected language: %s", id, lang)
 
-	store.Update(id, func(j *Job) { j.Text = text })
+	store.Update(id, func(j *Job) {
+		j.Text = text
+		j.Language = lang
+	})
 	store.Update(id, func(j *Job) { j.Status = StatusWriting })
 
 	noteID, err := blinko.Upsert(text, map[string]any{
