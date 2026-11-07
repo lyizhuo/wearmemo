@@ -82,15 +82,19 @@ curl $ASR_BASE/api/chat -d '{
 
 ```bash
 # 需要 JDK 21+ 与 Android SDK（compileSdk 36）
-gradle :app:assembleDebug
+./gradlew :app:assembleDebug
+
+# 指定 relay 地址（默认 http://10.0.2.2:8080，即模拟器访问宿主机）
+./gradlew :app:assembleDebug -PrelayBaseUrl=http://192.168.1.20:8080
 ```
 
-relay 地址与设备令牌通过 `app/build.gradle.kts` 的 `buildConfigField` 注入：
+debug 包允许明文 HTTP，方便直连局域网；release 包保持 Android 默认策略，
+必须走 HTTPS（例如 Cloudflare Tunnel）。
 
-```kotlin
-buildConfigField("String", "RELAY_BASE_URL", "\"http://10.0.2.2:8080\"")
-buildConfigField("String", "DEVICE_TOKEN", "\"dev-token-change-me\"")
-```
+CI 产物：`Actions → CI → wearmemo-debug-apk`。也可以在 `Run workflow` 时填
+`relay_base_url`，直接产出一个指向你内网地址的包。
+
+relay 镜像：`ghcr.io/<owner>/wearmemo-relay`，同时提供 `linux/arm64` 与 `linux/amd64`。
 
 ## 当前状态
 

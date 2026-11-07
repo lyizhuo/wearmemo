@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      relay_base_url:
+        description: "Relay base URL baked into the debug APK"
+        required: false
+        default: "http://10.0.2.2:8080"
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -60,7 +65,7 @@ jobs:
 
       # No release publishing on purpose: the APK is an artifact you download
       # from the run, so nothing is announced or tagged until it is ready.
-      - run: ./gradlew :app:assembleDebug --no-daemon
+      - run: ./gradlew :app:assembleDebug --no-daemon "-PrelayBaseUrl=${{ inputs.relay_base_url || 'http://10.0.2.2:8080' }}"
 
       - uses: actions/upload-artifact@v4
         with:

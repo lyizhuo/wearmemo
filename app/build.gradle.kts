@@ -15,9 +15,13 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        // Point this at the relay. On the emulator 10.0.2.2 is the host loopback;
-        // on a paired watch use the relay's LAN or tunnel address.
-        buildConfigField("String", "RELAY_BASE_URL", "\"http://10.0.2.2:8080\"")
+        // Where the relay lives. Override at build time until the pairing flow
+        // exists:
+        //   ./gradlew :app:assembleDebug -PrelayBaseUrl=http://192.168.1.20:8080
+        // Default is the emulator's alias for the host machine.
+        val relayBaseUrl = (project.findProperty("relayBaseUrl") as String?)
+            ?: "http://10.0.2.2:8080"
+        buildConfigField("String", "RELAY_BASE_URL", "\"$relayBaseUrl\"")
         buildConfigField("String", "DEVICE_TOKEN", "\"dev-token-change-me\"")
     }
 
