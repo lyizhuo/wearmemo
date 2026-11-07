@@ -42,10 +42,10 @@ func NewASR(base, model, keepAlive, langs string) *ASR {
 }
 
 type ollamaChatRequest struct {
-	Model     string           `json:"model"`
-	Stream    bool             `json:"stream"`
-	KeepAlive string           `json:"keep_alive,omitempty"`
-	Messages  []ollamaMessage  `json:"messages"`
+	Model     string          `json:"model"`
+	Stream    bool            `json:"stream"`
+	KeepAlive string          `json:"keep_alive,omitempty"`
+	Messages  []ollamaMessage `json:"messages"`
 }
 
 type ollamaMessage struct {
